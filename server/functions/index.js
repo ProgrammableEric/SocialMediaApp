@@ -2,7 +2,7 @@ const functions = require('firebase-functions');
 
 var admin = require("firebase-admin");
 
-var serviceAccount = require("/Users/ericfu/Documents/FrontEnd/Mock_Ins/smclone-3d5f9-firebase-adminsdk-d0t3x-e8f412aa49.json");
+var serviceAccount = require("/Users/ericfu/Documents/FrontEnd/Mock_Ins/serviceKey/smclone-3d5f9-firebase-adminsdk-d0t3x-e8f412aa49.json");
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
@@ -90,7 +90,7 @@ app.post('/signup', (req, res) => {
     };
 
     // TODO: validate data
-    db.doc('/users/${newUser.handle').get()
+    db.doc(`/users/${newUser.handle}`).get()   // promise let you write asynchronous methods in a normal way.
         .then(doc => {
             if (doc.exists){
                 return res.status(400).json({ handle: 'this handle is already taken!'});
