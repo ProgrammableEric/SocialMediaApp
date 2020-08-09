@@ -3,7 +3,7 @@ const app = require('express')();   // express app
 const FBAuth = require('./util/fbAuth');
 
 const { getAllScreams, postOneScream } = require('./handlers/screams');
-const { signUp, logIn } = require('./handlers/users');
+const { signUp, logIn, uploadImage } = require('./handlers/users');
 
 // scream routes 
 app.get('/screams', getAllScreams);
@@ -12,6 +12,7 @@ app.post('/scream',FBAuth, postOneScream);
 // Users routes
 app.post('/signup', signUp)
 app.post('/login', logIn)
+app.post('/user/image', FBAuth, uploadImage);
 
 
 // Post a scream. 

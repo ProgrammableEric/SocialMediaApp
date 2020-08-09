@@ -1,4 +1,4 @@
-const { admin } = require('./admin');
+const { admin, db } = require('./admin');
 
 // middleware function 
 // token starts from a Bearer [token]. Convention for putting token in the headers
@@ -14,7 +14,6 @@ module.exports = (req, res, next) => {
     admin.auth().verifyIdToken(idToken)
         .then(decodedToken => {   // decodede token holds the user data. 
             req.user = decodedToken;
-            console.log('decoded Token:', decodedToken);
             return db.collection('users')  // go into database, match the user from uid in request token, to userId attribute in users colleciton. 
                 .where('userId', '==', req.user.uid)
                 .limit(1)

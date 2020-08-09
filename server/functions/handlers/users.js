@@ -18,6 +18,8 @@ exports.signUp = (req, res) => {
 
     if (!valid) return res.status(400).json(errors);
 
+    const noImg = 'no-image.png';
+
     let token, userId; 
     db.doc(`/users/${newUser.handle}`)
         .get()   // promise let you write asynchronous methods in a synchronous way.
@@ -36,6 +38,7 @@ exports.signUp = (req, res) => {
                 handle: newUser.handle,
                 email: newUser.email,
                 createdAt: new Date().toISOString(),
+                imageUrl: `https://firebasestorage.googleapis.com/v0/b/${config.storageBucket}/o/${noImg}?alt=media`,
                 userId
             };
             return db.doc(`/users/${newUser.handle}`).set(userCredentials);
@@ -60,7 +63,7 @@ exports.logIn = (req, res) => {
     const { valid, errors } = validateLoginData(user);
 
     if (!valid) return res.status(400).json(errors);
-    
+
     firebase
         .auth()
         .signInWithEmailAndPassword(user.email, user.password)
@@ -78,4 +81,62 @@ exports.logIn = (req, res) => {
                 return res.status(500).json({error: err.code});
         })
 }
+
+exports.uploadImage = (req, res) => {
+    const BusBoy = require('busboy');
+    const path = require('path');
+    const os = require('os');
+    const fs = require('fs');  // file system 
+
+    const busboy = new BusBoy({ headers: req.headers });
+    
+    let imageFileName;
+    let imageToBeUploaded = {};
+
+    busboy.on('file', (fieldname, file, filename, encoding, mimetype) => {
+        console.log(fieldname);
+        console.log(filename);
+        console.log(mimetype);
+
+        if(mimetype !== 'image/jpeg' && mimetype !== 'image/png'){
+            return res.status(400).json({ error: 'wrong file type submitted' }); 
+        }
+
+        // image.png 
+        const imageExtension = filename.split('.')[filename.split('.').length - 1];
+        imageFileName = `${Math.round(Math.random()*10000000000)}.${imageExtension}`;
+        const filepath = path.join(os.tmpdir(), imageFileName);
+        imageToBeUploaded = { filepath, mimetype };
+        file.pipe(fs.createWriteStream(filepath));   // create the file
+    }); 
+
+    busboy.on('finish', () => {
+        // save image url to the firebase storage. 
+        admin.storage().bucket('gs://smclone-3d5f9.appspot.com').upload(imageToBeUploaded.filepath, {
+            resumable: false,
+            metadata: {
+                metadata: {
+                    contentType: imageToBeUploaded.mimetype
+                }
+            }
+        })
+        .then(() => {
+            const imageUrl = `https://firebasestorage.googleapis.com/v0/b/${config.storageBucket}/o/${imageFileName}?alt=media`;
+            return db.doc(`/users/${req.user.handle}`).update({ imageUrl });  // update user information. 
+            
+        })
+        .then(() => {
+            return res.json({message: 'Image uploaded successfully!'});
+        })
+        .catch(err => {
+            console.error(err);
+            return res.status(500).json({ error: err.code });
+        })
+    })
+    busboy.end(req.rawBody);
+}
+
+// slice(): returns a shallow copy of the portion of the array, without changing the original.  
+// splice(): remove or replace parts of the original array.
+
 
