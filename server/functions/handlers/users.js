@@ -28,11 +28,9 @@ exports.signUp = (req, res) => {
                 return firebase.auth().createUserWithEmailAndPassword(newUser.email, newUser.password);
             }
         }).then(data => {
-            console.log('here2');
             userId = data.user.uid;
             return data.user.getIdToken();
         }).then(idToken => {
-            console.log('here3');
             token = idToken;  
             const userCredentials = {
                 handle: newUser.handle,
@@ -42,7 +40,6 @@ exports.signUp = (req, res) => {
             };
             return db.doc(`/users/${newUser.handle}`).set(userCredentials);
         }).then(() => {
-            console.log('here4');
             return res.status(201).json( { token } );  // status 201, created 
         }).catch(err => {
             console.error(err);
@@ -63,7 +60,7 @@ exports.logIn = (req, res) => {
     const { valid, errors } = validateLoginData(user);
 
     if (!valid) return res.status(400).json(errors);
-
+    
     firebase
         .auth()
         .signInWithEmailAndPassword(user.email, user.password)
