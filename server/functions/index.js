@@ -3,7 +3,7 @@ const app = require('express')();   // express app
 const FBAuth = require('./util/fbAuth');
 
 const { getAllScreams, postOneScream } = require('./handlers/screams');
-const { signUp, logIn, uploadImage } = require('./handlers/users');
+const { signUp, logIn, uploadImage, addUserDetails, getAuthenticatedUser } = require('./handlers/users');
 
 // scream routes 
 app.get('/screams', getAllScreams);
@@ -11,8 +11,10 @@ app.post('/scream',FBAuth, postOneScream);
 
 // Users routes
 app.post('/signup', signUp)
-app.post('/login', logIn)
+app.post('/login', logIn)  // keep the login route minimal, only get the token
 app.post('/user/image', FBAuth, uploadImage);
+app.post('/user', FBAuth, addUserDetails);
+app.get('/user', FBAuth, getAuthenticatedUser);
 
 
 // Post a scream. 
