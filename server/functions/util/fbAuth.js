@@ -12,7 +12,8 @@ module.exports = (req, res, next) => {
     }
 
     admin.auth().verifyIdToken(idToken)
-        .then(decodedToken => {   // decodede token holds the user data. 
+        .then(decodedToken => {   // decodede token holds the user data.
+            console.log("decoded token: ", decodedToken); 
             req.user = decodedToken;
             return db.collection('users')  // go into database, match the user from uid in request token, to userId attribute in users colleciton. 
                 .where('userId', '==', req.user.uid)
@@ -21,6 +22,7 @@ module.exports = (req, res, next) => {
         })
         .then(data => {
             req.user.handle = data.docs[0].data().handle;
+            req.user.imageUrl = data.docs[0].data().imageUrl;
             return next();
         })
         .catch(err => {
