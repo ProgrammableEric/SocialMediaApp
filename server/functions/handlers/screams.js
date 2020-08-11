@@ -14,6 +14,9 @@ exports.getAllScreams = (req, res) => {
                     body: doc.data().body,
                     userHandle: doc.data().userHandle,
                     createdAt: doc.data().createdAt,
+                    commentCount: doc.data().commentCount,
+                    likeCount: doc.data().likeCount,
+                    userImage: doc.data().userImage
                 });
             })
             return res.json(screams);
@@ -80,7 +83,7 @@ exports.getScream = (req, res) => {
 
 // comment on a scream 
 exports.commentOnScream = (req, res) => {
-    if (req.body.body.trim() ==='') return res.status(400).json({ error: 'Must not be empty'});
+    if (req.body.body.trim() === '') return res.status(400).json({ comment: 'Must not be empty'});
 
     const newComment = {
         body: req.body.body,
