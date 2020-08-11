@@ -107,12 +107,12 @@ exports.commentOnScream = (req, res) => {
         })  
 }
 
-// like and unlike sreams
-
-// db.collection.where() 根据条件筛选
+/* db.collection.where() 根据条件筛选
 // db.doc() 根据ID直接选（doc ID）
 // 只返回reference, 后面都要加 get() 拿到实际数据
-// remember to consider the edge cases. 
+// remember to consider the edge cases. */
+
+// like and unlike a scream
 exports.unlikeScream = (req, res) => {
     const likeDocument = db.collection('likes').where("userHandle", "==", req.user.handle)
         .where('screamId', '==', req.params.screamId).limit(1);   // if the like document exists
