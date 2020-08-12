@@ -56,114 +56,126 @@ need to maintain all the client information any more (avoid conflict between mul
 
 // Firestore event trigger to generate notifications. 
 // create a like notification
-exports.createNotificationOnLike = 
-    functions.region('australia-southeast1')
-    .firestore.document('likes/{id}')
-    .onCreate(( snapshot ) => {
-        return db
-            .doc(`/screams/${snapshot.data().screamId}`)
-            .get()
-            .then(doc => {
-                if(doc.exists && doc.data().userHandle !== snapshot.data().userHandle){
-                    console.log("should be right.");
-                    return db.doc(`/notifications/${snapshot.id}`).set({
-                        createdAt: new Date().toISOString(),
-                        recipient: doc.data().userHandle,
-                        sender: snapshot.data().userHandle,
-                        type: 'like',
-                        read: false,
-                        screamId: doc.id
-                    });
-                } else {
-                    console.log("should not enter here.");
-                }
-            })
-            .catch(err => {
-                console.error(err);
-            })
-    })
-
-
-exports.deleteNotificationOnUnlike = 
-    functions.region('australia-southeast1')
-    .firestore.document('likes/{id}')
-    .onDelete((snapshot) => {
-        return db.doc(`notifications/${snapshot.id}`)
-            .delete()
-            .catch(err => {
-                console.error(err);
-            })
-    })
-
-
-exports.createNotificationOnComment = 
-    functions.region('australia-southeast1').
-    firestore.document('comments/{id}')
-    .onCreate((snapshot) => {
-        return db.doc(`/screams/${snapshot.data().screamId}`)
-            .get()
-            .then(doc => {
-                if(doc.exists && doc.data().userHandle !== snapshot.data().userHandle){
-                    return db.doc(`/notifications/${snapshot.id}`).set({
-                        createdAt: new Date().toISOString(),
-                        recipient: doc.data().userHandle,
-                        sender: snapshot.data().userHandle,
-                        type: 'comment',
-                        read: false,
-                        screamId: doc.id
-                    });
-                }
-            })
-            .catch(err => {
-                console.error(err);
-            })
-    })
-
-// update user image url for all screams the user has changed it. 
-exports.onUserImageChange = functions.region('australia-southeast1').firestore.document('/users/{userId}')
-    .onUpdate(change => {
-        console.log(change.before.data());
-        console.log(change.after.data());
-        if (change.before.data().imageUrl !== change.after.data().imageUrl){
-            console.log('image has changed');
-            const batch = db.batch();
-            return db.collection('screams').where('userHandle', '==', change.before.data().handle).get()
-            .then(data => {
-                data.forEach(doc => {
-                    const scream = db.doc(`/screams/${doc.id}`);
-                    batch.update(scream, {userImage: change.after.data().imageUrl});
-                })
-                return batch.commit();
-            })
+exports.createNotificationOnLike = functions
+  .region('australia-southeast1')
+  .firestore.document('likes/{id}')
+  .onCreate((snapshot) => {
+    return db
+      .doc(`/screams/${snapshot.data().screamId}`)
+      .get()
+      .then((doc) => {
+        if (
+          doc.exists &&
+          doc.data().userHandle !== snapshot.data().userHandle
+        ) {
+          return db.doc(`/notifications/${snapshot.id}`).set({
+            createdAt: new Date().toISOString(),
+            recipient: doc.data().userHandle,
+            sender: snapshot.data().userHandle,
+            type: 'like',
+            read: false,
+            screamId: doc.id
+          });
         }
-    })
+      })
+      .catch((err) => console.error(err));
+  });
+exports.deleteNotificationOnUnLike = functions
+  .region('australia-southeast1')
+  .firestore.document('likes/{id}')
+  .onDelete((snapshot) => {
+    return db
+      .doc(`/notifications/${snapshot.id}`)
+      .delete()
+      .catch((err) => {
+        console.error(err);
+        return;
+      });
+  });
+exports.createNotificationOnComment = functions
+  .region('australia-southeast1')
+  .firestore.document('comments/{id}')
+  .onCreate((snapshot) => {
+    return db
+      .doc(`/screams/${snapshot.data().screamId}`)
+      .get()
+      .then((doc) => {
+        if (
+          doc.exists &&
+          doc.data().userHandle !== snapshot.data().userHandle
+        ) {
+          return db.doc(`/notifications/${snapshot.id}`).set({
+            createdAt: new Date().toISOString(),
+            recipient: doc.data().userHandle,
+            sender: snapshot.data().userHandle,
+            type: 'comment',
+            read: false,
+            screamId: doc.id
+          });
+        }
+      })
+      .catch((err) => {
+        console.error(err);
+        return;
+      });
+  });
 
+exports.onUserImageChange = functions
+  .region('australia-southeast1')
+  .firestore.document('/users/{userId}')
+  .onUpdate((change) => {
+    console.log(change.before.data());
+    console.log(change.after.data());
+    if (change.before.data().imageUrl !== change.after.data().imageUrl) {
+      console.log('image has changed');
+      const batch = db.batch();
+      return db
+        .collection('screams')
+        .where('userHandle', '==', change.before.data().handle)
+        .get()
+        .then((data) => {
+          data.forEach((doc) => {
+            const scream = db.doc(`/screams/${doc.id}`);
+            batch.update(scream, { userImage: change.after.data().imageUrl });
+          });
+          return batch.commit();
+        });
+    } else return true;
+  });
 
-// delete likes, comments from the database if the corresponding scream is deleted. 
-exports.onScreamDelete = functions.region('australia-southeast1').firestore.document('/scream/{screamId}')
-    .onDelete( (snapshot, context) => {  // context contains the url parameters. 
-        const screamId = context.params.screamId;
-        const batch = db.batch();
-        return db.collection('comments').where('screamId', '==', screamId).get()
-            .then(data => {
-                data.forEach(doc => {
-                    batch.delete(db.doc(`/comments/${doc.id}`));
-                })
-                return db.collection('likes').where('screamId', '==', screamId);
-            })
-            .then(data => {
-                data.forEach(doc => {
-                    batch.delete(db.doc(`/likes/${doc.id}`));
-                })
-                return db.collection('notifications').where('screamId', '==', screamId);
-            })
-            .then(data => {
-                data.forEach(doc => {
-                    batch.delete(db.doc(`/notifications/${doc.id}`));
-                })
-                return batch.commit();
-            })
-            .catch(err => {
-                console.error(err);
-            })
-    })
+exports.onScreamDelete = functions
+  .region('australia-southeast1')
+  .firestore.document('/screams/{screamId}')
+  .onDelete((snapshot, context) => {
+    const screamId = context.params.screamId;
+    const batch = db.batch();
+    return db
+      .collection('comments')
+      .where('screamId', '==', screamId)
+      .get()
+      .then((data) => {
+        data.forEach((doc) => {
+          batch.delete(db.doc(`/comments/${doc.id}`));
+        });
+        return db
+          .collection('likes')
+          .where('screamId', '==', screamId)
+          .get();
+      })
+      .then((data) => {
+        data.forEach((doc) => {
+          batch.delete(db.doc(`/likes/${doc.id}`));
+        });
+        return db
+          .collection('notifications')
+          .where('screamId', '==', screamId)
+          .get();
+      })
+      .then((data) => {
+        data.forEach((doc) => {
+          batch.delete(db.doc(`/notifications/${doc.id}`));
+        });
+        return batch.commit();
+      })
+      .catch((err) => console.error(err));
+  });
