@@ -26,7 +26,7 @@ const styles = {
 
 class Scream extends Component {
     render() {
-        dayjs.extend(relativeTime);
+        dayjs.extend(relativeTime);   // library doing data & time functions.
         // destructuring ... in two levels 
         const { classes, scream : {body, createdAt, userImage, userHandle, screamId, likeCount, commentCount} } = this.props; 
         return (

@@ -14,7 +14,7 @@ exports.signUp = (req, res) => {
         confirmPassword: req.body.confirmPassword,
         handle: req.body.handle,
     };
-
+    
     const { valid, errors } = validateSignupData(newUser);
 
     if (!valid) return res.status(400).json(errors);
