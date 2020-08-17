@@ -6,7 +6,6 @@ import {
   SET_AUTHENTICATED,
   SET_UNAUTHENTICATED
 } from "../types";
-import axios from "axios";
 
 const initialState = {
   authenticated: false,
@@ -16,7 +15,7 @@ const initialState = {
 };
 
 export default function(state = initialState, action) {
-  switch (action) {
+  switch (action.type) {
     case SET_AUTHENTICATED:
       return {
         ...state,
