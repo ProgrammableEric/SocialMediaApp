@@ -43,6 +43,15 @@ export default {
     },
     progress: {
       position: "absolute"
+    },
+    visiableSeparator: {
+      width: "100%",
+      borderBottom: "1px solid rgba(0, 0, 0, 0.1)",
+      marginBottom: "20px"
+    },
+    invisibleSeperator: {
+      border: "none",
+      margin: 4
     }
   }
 };

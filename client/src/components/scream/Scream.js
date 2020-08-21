@@ -4,9 +4,10 @@ import { Link } from "react-router-dom";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime"; // day.js plugin
 import PropTypes from "prop-types";
-import FancyButton from "../util/FancyButton";
+import FancyButton from "../../util/FancyButton";
 import DeleteScream from "./DeleteScream";
 import ScreamDialog from "./ScreamDialog";
+import LikeButton from "./LikeButton";
 
 // MUI
 import Card from "@material-ui/core/Card";
@@ -20,7 +21,6 @@ import FavoriteBorder from "@material-ui/icons/FavoriteBorder";
 import FavoriteIcon from "@material-ui/icons/Favorite";
 
 import { connect } from "react-redux";
-import { likeScream, unlikeScream } from "../redux/actions/dataActions";
 
 const styles = {
   card: {
@@ -39,26 +39,6 @@ const styles = {
 
 class Scream extends Component {
   // check if we've liked the scream or not.
-  likedScream = () => {
-    if (
-      this.props.user.likes &&
-      this.props.user.likes.find(
-        like => like.screamId === this.props.scream.screamId
-      )
-    ) {
-      return true;
-    } else {
-      return false;
-    }
-  };
-
-  likeScream = () => {
-    this.props.likeScream(this.props.scream.screamId);
-  };
-
-  unlikeScream = () => {
-    this.props.unlikeScream(this.props.scream.screamId);
-  };
 
   render() {
     dayjs.extend(relativeTime); // library doing data & time functions.
@@ -79,22 +59,6 @@ class Scream extends Component {
         credentials: { handle }
       }
     } = this.props;
-
-    const likeButton = !authenticated ? (
-      <FancyButton tip="like">
-        <Link to="/login">
-          <FavoriteBorder color="primary" />
-        </Link>
-      </FancyButton>
-    ) : this.likedScream() ? (
-      <FancyButton tip="undo like" onClick={this.unlikeScream}>
-        <FavoriteIcon color="primary" />
-      </FancyButton>
-    ) : (
-      <FancyButton tip="like" onClick={this.likeScream}>
-        <FavoriteBorder color="primary" />
-      </FancyButton>
-    );
 
     const deleteButton =
       authenticated && userHandle === handle ? (
@@ -122,7 +86,7 @@ class Scream extends Component {
             {dayjs(createdAt).fromNow()}
           </Typography>
           <Typography variant="body1">{body}</Typography>
-          {likeButton}
+          <LikeButton screamId={screamId} />
           <span>{likeCount} Likes</span>
           <FancyButton tip="comment">
             <ChatIcon color="primary" />
@@ -147,12 +111,9 @@ const mapStateToProps = state => ({
   user: state.user
 });
 
-const mapActionsToProps = {
-  likeScream,
-  unlikeScream
-};
+// const mapActionsToProps = {
+//   likeScream,
+//   unlikeScream
+// };
 
-export default connect(
-  mapStateToProps,
-  mapActionsToProps
-)(withStyles(styles)(Scream));
+export default connect(mapStateToProps)(withStyles(styles)(Scream));

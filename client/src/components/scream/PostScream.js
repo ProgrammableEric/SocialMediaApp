@@ -1,6 +1,6 @@
 import React, { Component, Fragment } from "react";
 import PropTypes from "prop-types";
-import FancyButton from "../util/FancyButton";
+import FancyButton from "../../util/FancyButton";
 import withStyles from "@material-ui/core/styles/withStyles";
 
 // MUI stuff
@@ -18,7 +18,7 @@ import CloseIcon from "@material-ui/icons/Close";
 
 // redux stuff
 import { connect } from "react-redux";
-import { postScream, clearErrors } from "../redux/actions/dataActions";
+import { postScream, clearErrors } from "../../redux/actions/dataActions";
 
 const styles = theme => ({
   ...theme.spreadThis,

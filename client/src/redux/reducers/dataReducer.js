@@ -9,8 +9,8 @@ import {
 } from "../types";
 
 const initialState = {
-  screams: [],
-  scream: [],
+  screams: [], // the whole scream list
+  scream: [], // the scream that's being changed/manipulated right now
   loading: false
 };
 
@@ -38,6 +38,9 @@ export default function(state = initialState, action) {
         scream => scream.screamId === action.payload.screamId
       );
       state.screams[index] = action.payload;
+      if (state.scream.screamId === action.payload.screamId) {
+        state.scream = action.payload;
+      }
       return {
         ...state
       };
