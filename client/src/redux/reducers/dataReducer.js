@@ -11,7 +11,7 @@ import {
 
 const initialState = {
   screams: [], // the whole scream list
-  scream: [], // the scream that's being changed/manipulated right now
+  scream: {}, // the scream that's being changed/manipulated right now
   loading: false
 };
 
