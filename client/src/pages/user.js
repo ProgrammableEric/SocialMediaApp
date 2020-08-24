@@ -18,13 +18,13 @@ class user extends Component {
 
   componentDidMount() {
     const handle = this.props.match.params.handle; // this line gets the URL
-    console.log("handle is :", handle);
+    // console.log("handle is :", handle);
     this.props.getUserData(handle);
     axios
       .get(`/user/${handle}`)
       .then(res => {
         this.setState({ profile: res.data.user });
-        console.log("profile updated  !!!", this.state.profile);
+        // console.log("profile updated  !!!", this.state.profile);
       })
       .catch(err => {
         console.log(err);
