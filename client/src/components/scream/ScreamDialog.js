@@ -164,8 +164,8 @@ const mapStateToProps = state => ({
   UI: state.UI
 });
 
-const mapDispatchToProps = {};
-
 export default connect(mapStateToProps, { getScream, clearErrors })(
   withStyles(styles)(ScreamDialog)
 );
+
+// TODO: commentcount does not update with submitComment action ...

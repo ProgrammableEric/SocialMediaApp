@@ -76,7 +76,7 @@ class Scream extends Component {
           <Typography
             variant="h5"
             component={Link}
-            to={`/uers/${userHandle}`}
+            to={`/users/${userHandle}`}
             color="primary"
           >
             {userHandle}

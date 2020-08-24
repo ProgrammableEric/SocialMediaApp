@@ -135,6 +135,25 @@ export const deleteScream = screamId => dispatch => {
     .catch(err => console.log(err));
 };
 
+export const getUserData = userHandle => dispatch => {
+  dispatch({ type: LOADING_DATA });
+  axios
+    .get(`/user/${userHandle}`)
+    .then(res => {
+      dispatch({
+        type: SET_SCREAMS,
+        payload: res.data.screams
+      });
+    })
+    .catch(() => {
+      dispatch({
+        type: SET_SCREAMS,
+        payload: null
+      });
+      console.log("Error in grabbing scream of this user");
+    });
+};
+
 export const clearErrors = () => dispatch => {
   dispatch({
     type: CLEAR_ERRORS
