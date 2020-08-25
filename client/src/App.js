@@ -25,6 +25,9 @@ import user from "./pages/user";
 
 const theme = createMuiTheme(themeFile);
 
+axios.defaults.baseURL =
+  "https://australia-southeast1-smclone-3d5f9.cloudfunctions.net/api";
+
 // take care of token authentication
 const token = localStorage.FBIdToken;
 if (token) {
