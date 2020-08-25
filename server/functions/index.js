@@ -42,7 +42,7 @@ app.get("/user/:handle", getUserDetails);
 app.post("/notifications", FBAuth, markNotificationsRead);
 
 // https://baseurl.com/api/...
-exports.api = functions.https.onRequest(app); // turn into multiple routes using express.
+exports.api = functions.region("australia-southeast1").https.onRequest(app); // turn into multiple routes using express.
 
 /* 
 

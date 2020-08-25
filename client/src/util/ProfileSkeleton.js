@@ -37,7 +37,7 @@ const ProfileSkeleton = props => {
   const { classes } = props;
   return (
     <Paper className={classes.paper}>
-      <div classname={classes.profile}>
+      <div className={classes.profile}>
         <div className="image-wrapper">
           <img src={NoImg} alt="profile" className="profile-image" />
         </div>
