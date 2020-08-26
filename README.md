@@ -25,6 +25,8 @@ A social media site clone using React, React-redux, Material-UI, Firebase, Expre
   - [x] Post detail page
   - [x] Post detail page url route
   - [x] Loading skeleton
+  - [ ] Home page comment button 
+  - [ ] Multi-page post display 
   
 - User profile 
 
@@ -43,9 +45,9 @@ A social media site clone using React, React-redux, Material-UI, Firebase, Expre
  
 ## Tech/framework used
 - Frontend 
-  - React, ReactDOM, redux, React-router, axios
+  - React, ReactDOM, React-redux, React-router
+  - axios
   - Material-UI
-  - 
   
 - Backend/server
   - Firebase functions, database, hosting 
